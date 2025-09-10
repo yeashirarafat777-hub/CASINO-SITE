@@ -13,9 +13,6 @@ Welcome to the ultimate solution for launching your online casino! Our free, pre
 ## Live Demo
 Experience the full potential of our casino site template by checking out the live demo: [MortalSoft Demo](https://demo.mortalsoft.online). See how seamlessly our template integrates with our slot API and explore the user-friendly interface.
 
-## Join Our Community
-Stay connected with our growing community of developers and casino operators. Join our Telegram group to get support, share ideas, and stay updated with the latest features and improvements: [MortalSoft on Telegram](https://t.me/mortalsoft)
-
 ## Installation Guide
 Follow these steps to set up your casino site on Ubuntu 20.04 / 22 or Debian 10 / 11:
 
