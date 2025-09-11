@@ -11,7 +11,7 @@ Welcome to the ultimate solution for launching your online casino! Our free, pre
 - **Responsive Design**: Fully responsive layout ensures your site looks great on all devices, enhancing user experience.
 
 ## Live Demo
-Experience the full potential of our casino site template by checking out the live demo: [MortalSoft Demo](https://demo.mortalsoft.online). See how seamlessly our template integrates with our slot API and explore the user-friendly interface.
+Experience the full potential of our casino site template by checking out the live demo: [MortalSoft Demo](https://demo.mortalsoft.net). See how seamlessly our template integrates with our slot API and explore the user-friendly interface.
 
 ## Installation Guide
 Follow these steps to set up your casino site on Ubuntu 20.04 / 22 or Debian 10 / 11:
@@ -34,7 +34,7 @@ Follow these steps to set up your casino site on Ubuntu 20.04 / 22 or Debian 10 
 - `/callback/paymentwall` - PaymentWall
 - `/callback/stripe` - Stripe
 
-**TO GET YOUR SLOT GAMES API ORDER AT** [https://mortalsoft.online](https://mortalsoft.online)
+**TO GET YOUR SLOT GAMES API ORDER AT** [https://mortalsoft.net](https://mortalsoft.net)
 
 **TELEGRAM:** [https://t.me/mortalsoft](https://t.me/mortalsoft)
 
