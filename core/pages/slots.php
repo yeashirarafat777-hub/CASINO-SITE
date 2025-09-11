@@ -258,7 +258,7 @@ let returnGameHtml = game => {
   return `
     <a class="slots-game" href="/slots_game/${game.identifier2}" id="game_${game.title.toLowerCase()}">
       <div class="game">
-        <img onerror="this.onerror=null;this.setAttribute('src', 'https://steamuserimages-a.akamaihd.net/ugc/885384897182110030/F095539864AC9E94AE5236E04C8CA7C2725BCEFF/');" src="https://api-prod.mortalsoft.online/i/${game.identifier2}.jpg" alt="${name}" />
+        <img onerror="this.onerror=null;this.setAttribute('src', 'https://steamuserimages-a.akamaihd.net/ugc/885384897182110030/F095539864AC9E94AE5236E04C8CA7C2725BCEFF/');" src="https://api-prod.mortalsoft.net/i/${game.identifier2}.jpg" alt="${name}" />
 
         <div class="overlay"></div>
         <div class="provider">
