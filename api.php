@@ -203,55 +203,77 @@ switch($api) {
         echo json_encode($rows, JSON_PRETTY_PRINT);
         die();
     break;
-    case "nowpayments":
-        $DataBase = new DataBase();
-        $Config = new Config();
-        $Secret = $Config->api("nowpayments")["secret"];
-
-        $error_msg = "Unknown error";
-        $auth_ok = false;
-        $request_data = null;
+case "nowpayments":
+    $DataBase = new DataBase();
+    $Config = new Config();
+    $Secret = $Config->api("nowpayments")["secret"];
     
-        if (isset($_SERVER['HTTP_X_NOWPAYMENTS_SIG']) && !empty($_SERVER['HTTP_X_NOWPAYMENTS_SIG'])) {
-            $recived_hmac = $_SERVER['HTTP_X_NOWPAYMENTS_SIG'];
-            $request_json = file_get_contents('php://input');
-            $request_data = json_decode($request_json, true);
-            ksort($request_data);
-            $sorted_request_json = json_encode($request_data, JSON_UNESCAPED_SLASHES);
-            if ($request_json !== false && !empty($request_json)) {
-                $hmac = hash_hmac("sha512", $sorted_request_json, trim($Secret));
-                if ($hmac == $recived_hmac) {
-                    if($request_data["payment_status"]=="finished") {
-    
-                        $DataBase->Query("SELECT * FROM transaction WHERE title = :txid AND status = 0");
-                        $DataBase->Bind(":txid", $request_data["payment_id"]);
-                        $DataBase->Execute();
-    
-                        if($DataBase->RowCount() > 0) {
-                            $transaction = $DataBase->Single();
-                            $user = $transaction["user"];
+    $error_msg = "Unknown error";
+    $auth_ok = false;
+    $request_data = null;
 
-                            $DataBase->Query("UPDATE transaction SET status = :status WHERE title = :txid");
-                            $DataBase->Bind(":txid", $request_data["payment_id"]);
-                            $DataBase->Bind(":status", 1);
-                            $DataBase->Execute();
+    $recived_hmac = null;
+    if (isset($_SERVER['HTTP_X_NOWPAYMENTS_SIG']) && !empty($_SERVER['HTTP_X_NOWPAYMENTS_SIG'])) {
+        $recived_hmac = $_SERVER['HTTP_X_NOWPAYMENTS_SIG'];
+    } elseif (isset($_SERVER['HTTP_x_nowpayments_sig']) && !empty($_SERVER['HTTP_x_nowpayments_sig'])) {
+        $recived_hmac = $_SERVER['HTTP_x_nowpayments_sig'];
+    }
+    if ($recived_hmac === null) {
+        $error_msg = 'No HMAC signature sent.';
+        break;
+    }
 
-                            $DataBase->Query("UPDATE users SET balance = balance + :amount WHERE userid = :user");
-                            $DataBase->Bind(":amount", $transaction["amount"]);
-                            $DataBase->Bind(":user", $user);
-                            $DataBase->Execute();
-                        }
-                    }
-                } else {
-                    $error_msg = 'HMAC signature does not match';
-                }
-            } else {
-                $error_msg = 'Error reading POST data';
+    $request_json = file_get_contents('php://input');
+    if ($request_json === false || $request_json === '') {
+        $error_msg = 'Error reading POST data';
+        break;
+    }
+
+    $request_data = json_decode($request_json, true);
+    if (!is_array($request_data)) {
+        $error_msg = 'Invalid JSON data';
+        break;
+    }
+
+    ksort($request_data);
+    $sorted_request_json = json_encode($request_data, JSON_UNESCAPED_SLASHES);
+
+    if ($sorted_request_json === false) {
+        $error_msg = 'Error encoding sorted JSON';
+        break;
+    }
+
+    $computed_hmac = hash_hmac('sha512', $sorted_request_json, trim($Secret));
+
+    if (!hash_equals($computed_hmac, $recived_hmac)) {
+        $error_msg = 'HMAC signature does not match';
+        break;
+    }
+
+    $auth_ok = true;
+
+    if ($auth_ok) {
+        if (isset($request_data["payment_status"]) && $request_data["payment_status"] === "finished") {
+            $DataBase->Query("SELECT * FROM transaction WHERE title = :txid AND status = 0");
+            $DataBase->Bind(":txid", $request_data["payment_id"]);
+            $DataBase->Execute();
+            if ($DataBase->RowCount() > 0) {
+                $transaction = $DataBase->Single();
+                $user = $transaction["user"];
+
+                $DataBase->Query("UPDATE transaction SET status = :status WHERE title = :txid");
+                $DataBase->Bind(":txid", $request_data["payment_id"]);
+                $DataBase->Bind(":status", 1);
+                $DataBase->Execute();
+
+                $DataBase->Query("UPDATE users SET balance = balance + :amount WHERE userid = :user");
+                $DataBase->Bind(":amount", $transaction["amount"]);
+                $DataBase->Bind(":user", $user);
+                $DataBase->Execute();
             }
-        } else {
-            $error_msg = 'No HMAC signature sent.';
         }
-    break;
+    }
+break;
     case "withdraw": 
         $rows = array();
         $DataBase = new DataBase(); 
@@ -527,4 +549,5 @@ switch($api) {
                 exit('Database connection failed');
             }
         break;
+
 }
